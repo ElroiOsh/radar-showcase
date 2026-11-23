@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-11-23T12:49:01.715Z",
+  "sources": {
+    "workday": 153,
+    "comeet": 0,
+    "greenhouse": 0,
+    "lever": 0,
+    "smartrecruiters": 0,
+    "linkedin": 141,
+    "manual": 0,
+    "claude": 0
+  },
+  "sourceResults": [
+    {
+      "name": "Description enrich",
+      "status": "ok",
+      "count": 18,
+      "ms": 7861
+    }
+  ]
+}

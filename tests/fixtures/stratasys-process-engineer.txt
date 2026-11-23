@@ -1,0 +1,27 @@
+Stratasys is a world leader in 3D printing!
+ Stratasys is leading the global shift to additive manufacturing with innovative 3D printing solutions for industries such as aerospace, automotive, consumer products and healthcare. Through smart and connected 3D printers, polymer materials, a software ecosystem, and parts on demand, Stratasys solutions deliver competitive advantages at every stage in the product value chain. The world’s leading organizations turn to Stratasys to transform product design, bring agility to manufacturing and supply chains, and improve patient care.
+ Process Engineer
+ As Part Of This Role, You Will
+ - Process engineering activities for 3DP materials ensuring compliance with FDA, MDR, ISO 13485, and internal quality standards.
+- Own and continuously improve 3DP materials manufacturing, filling, packaging processes, and supporting production processes to enhance quality, efficiency, and reliability.
+- Lead root cause investigations and implement effective corrective and preventive actions (CAPA) for production deviations, quality events, and customer complaints.
+- Lead cross-functional engineering projects from initiation through completion, ensuring delivery within defined scope, timeline, budget, and quality requirements.
+- Lead validation activities including PFMEA, IQ, OQ, PQ, cleaning validation, process validation, equipment qualification, and computerized system validation.
+- Transfer new products from R&D to manufacturing and support process scale-up through NPI activities.
+- Create and maintain manufacturing documentation, work instructions, BOMs, process documentation, fixtures, and tooling required for production.
+- Manage external vendors and contractors during equipment installation, qualification, maintenance, and improvement projects.
+- Support internal and external audits by providing engineering expertise and technical documentation.
+- Work closely with Maintenance and Operations teams to improve equipment reliability and Overall Equipment Effectiveness (OEE).
+- The position is in Kiryat Gat
+ Essential Education, Skills, And Experience
+ - B.Sc. degree in Chemical Engineering, Materials Engineering– mandatory.
+- Minimum 3 years of experience as a Process/Manufacturing/Production Engineer in a regulated manufacturing environment – mandatory.
+- Experience with validation process- IQ, OQ, and PQ (cleaning, methods, process, equipment, and software) – an advantage
+- Strong written and verbal English language communication skills - mandatory
+- Experience in manufacturing technology activities – new line establishment ,process optimization, industrial equipment, milling/grinding process, automation lines HMI, etc. – mandatory
+- Experience leading engineering projects from concept to implementation - mandatory
+- Knowledge of statistical tools, process capability, SPC, and problem-solving methodologies (8D, DMAIC, Fishbone, 5 Why) – an advantage.
+- Experience with Lean Manufacturing / Six Sigma / Continuous Improvement - an advantage
+- Ability to present technical information and effectively communicate across all levels of the organization.
+- Good communication skills. Team player and able to build and maintain relationships with both internal and external departments.
+- Familiar with control software, ERP, and Agile systems-- an advantage.

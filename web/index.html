@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#0e1614" />
+  <title>RADAR · Filtered jobs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #101816;
+      --muted: #5a6a64;
+      --paper: #f3f6f4;
+      --mint-wash: #e8f2ec;
+      --panel: #ffffff;
+      --line: #d5ddd8;
+      --yield: #0f8a6a;
+      --cta: #0a5c48;
+      --maybe: #c45c26;
+      --unrated: #889992;
+      --brand-spark: #8fe0c5;
+      --hero-ink: #f4f7f5;
+      --hero-muted: #c9d7d0;
+      --focus: #0f8a6a;
+      --radius-badge: 6px;
+      --radius-stat: 10px;
+      --radius-card: 14px;
+      --desk: 720px;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      font-family: "DM Sans", "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, var(--mint-wash), var(--paper));
+      color: var(--ink);
+      line-height: 1.45;
+      text-wrap: pretty;
+    }
+    ::selection {
+      background: rgba(15, 138, 106, 0.22);
+      color: var(--ink);
+    }
+    a:focus-visible,
+    .cta:focus-visible,
+    h2 a:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+    header.hero {
+      padding: 1.35rem 1rem 1.15rem;
+      background: linear-gradient(145deg, #0e1614, #1c3a4a);
+      color: var(--hero-ink);
+    }
+    .hero-inner { max-width: var(--desk); margin: 0 auto; }
+    .brand {
+      font-weight: 800;
+      font-size: clamp(1.75rem, 4vw, 2rem);
+      margin: 0;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    .brand span { color: var(--brand-spark); }
+    .hero p {
+      margin: 0.45rem 0 0;
+      color: var(--hero-muted);
+      font-size: 0.95rem;
+    }
+    main {
+      max-width: var(--desk);
+      margin: 0 auto;
+      padding: 1.15rem 1rem 0.5rem;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.5rem;
+      margin: 0 0 0.85rem;
+    }
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 0.7rem 0.8rem;
+      border-radius: var(--radius-stat);
+    }
+    .stat strong {
+      display: block;
+      font-size: 1.25rem;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+    .stat span { color: var(--muted); font-size: 0.85rem; }
+    .sources {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin: 0 0 0.75rem;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin: 0 0 1rem;
+      align-items: center;
+    }
+    .toolbar button, .toolbar a.tool-btn {
+      appearance: none; -webkit-appearance: none;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 0.55rem 0.8rem;
+      border-radius: 10px;
+      min-height: 2.5rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .toolbar button.primary {
+      background: var(--cta);
+      color: #fff;
+      border-color: var(--cta);
+    }
+    .toolbar button:disabled { opacity: 0.55; cursor: wait; }
+    .toolbar #scan-status {
+      color: var(--muted);
+      font-size: 0.85rem;
+      flex: 1 1 12rem;
+    }
+    .loc-unclear {
+      display: inline-block;
+      margin-inline-start: 0.25rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: var(--radius-badge);
+      background: #f3e6d8;
+      color: #8a3f18;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .add-panel, .scan-extra {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 0.85rem 0.9rem;
+      margin: 0 0 1rem;
+    }
+    .add-panel[hidden], .scan-extra[hidden] { display: none; }
+    .add-panel label, .scan-extra label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin: 0.35rem 0 0.25rem;
+    }
+    .add-panel input, .add-panel textarea, .scan-extra input {
+      width: 100%;
+      font: inherit;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.55rem 0.65rem;
+    }
+    .add-panel textarea { min-height: 7rem; resize: vertical; }
+    .add-actions { display: flex; gap: 0.45rem; margin-top: 0.65rem; flex-wrap: wrap; }
+    .jobs { display: grid; gap: 0.85rem; }
+    .job {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 1rem 1rem 1.05rem;
+      border-left: 5px solid var(--yield);
+    }
+    .job[data-rec="maybe"] { border-left-color: var(--maybe); }
+    .job[data-rec="blocked"] { border-left-color: #6b7a74; }
+    .job[data-rec="unrated"] { border-left-color: var(--unrated); }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.25rem 0.35rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+    }
+    .meta .sep { opacity: 0.7; }
+    .new {
+      background: #dff0e9;
+      color: var(--cta);
+      font-weight: 700;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      padding: 0.15rem 0.45rem;
+      border-radius: var(--radius-badge);
+      margin-left: 0.15rem;
+    }
+    h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.3;
+      text-wrap: balance;
+    }
+    h2 a {
+      color: inherit;
+      text-decoration: none;
+    }
+    h2 a:hover { text-decoration: underline; text-underline-offset: 0.15em; }
+    .company {
+      margin: 0.3rem 0 0.85rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .rec-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem 0.65rem;
+      margin: 0 0 0.75rem;
+    }
+    .rec-pill {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.18rem 0.5rem;
+      border-radius: var(--radius-badge);
+      border: 1px solid transparent;
+    }
+    .rec-go {
+      color: var(--cta);
+      background: #dff0e9;
+      border-color: #b9ddd0;
+    }
+    .rec-maybe {
+      color: #8a3f18;
+      background: #f7e4d6;
+      border-color: #ebc9b0;
+    }
+    .rec-blocked {
+      color: #3d4a45;
+      background: #e6ebe8;
+      border-color: #c5cfc9;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .rec-meta { color: var(--muted); font-size: 0.85rem; }
+    .filtered-out {
+      margin: 1.25rem 0 0;
+      border: 1px dashed var(--line);
+      border-radius: 10px;
+      background: #eef2f0;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .filtered-out summary {
+      cursor: pointer;
+      padding: 0.55rem 0.75rem;
+      font-weight: 700;
+      list-style: none;
+    }
+    .filtered-out summary::-webkit-details-marker { display: none; }
+    .filtered-out p {
+      margin: 0;
+      padding: 0 0.75rem 0.45rem;
+      font-size: 0.8rem;
+    }
+    .filtered-out-list {
+      margin: 0;
+      padding: 0 0.75rem 0.75rem 1.6rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      max-height: 14rem;
+      overflow: auto;
+    }
+    .filtered-out-list li { margin: 0.2rem 0; }
+    .fits {
+      display: grid;
+      gap: 0.4rem;
+      margin: 0 0 0.85rem;
+      padding: 0.15rem 0 0.25rem;
+      border-top: 1px solid var(--line);
+      padding-top: 0.7rem;
+    }
+    .fit {
+      display: grid;
+      grid-template-columns: 0.7rem 1fr auto;
+      gap: 0.5rem;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+    .fit-dot {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 50%;
+      background: var(--unrated);
+    }
+    .fit-high { background: var(--yield); }
+    .fit-medium { background: #c4a035; }
+    .fit-low-medium { background: var(--maybe); }
+    .fit-low { background: #b44a4a; }
+    .fit-label { color: var(--muted); }
+    .fit-val { font-weight: 600; font-variant-numeric: tabular-nums; }
+    .why, .gaps, .check, .unrated {
+      margin: 0.45rem 0;
+      font-size: 0.95rem;
+      max-width: 68ch;
+    }
+    .k {
+      display: inline-block;
+      min-width: 4.6rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-right: 0.25rem;
+    }
+    .unrated { color: #8a3f18; }
+    .unrated .k { color: #8a3f18; }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.75rem;
+      margin-top: 0.55rem;
+      padding: 0.35rem 0;
+      font-weight: 700;
+      color: var(--cta);
+      text-decoration: none;
+      text-underline-offset: 0.18em;
+    }
+    .cta:hover { text-decoration: underline; }
+    .empty {
+      padding: 1.35rem 1.1rem;
+      border: 1px dashed var(--line);
+      color: var(--muted);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.55);
+    }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 1.75rem 1rem 2.25rem;
+      font-size: 0.85rem;
+    }
+    @media (min-width: 640px) {
+      .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    .hero-links { margin-top: 0.65rem; }
+    .hero-links a {
+      color: var(--brand-spark);
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+    .hero-links a:hover { text-decoration: underline; text-underline-offset: 0.15em; }
+    .filters {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+      margin: 0 0 1rem;
+    }
+    .filter-btn {
+      appearance: none; border: 1px solid var(--line); background: var(--panel);
+      color: var(--muted); font: inherit; font-size: 0.85rem; font-weight: 600;
+      padding: 0.4rem 0.7rem; border-radius: 999px; min-height: 2.4rem; cursor: pointer;
+    }
+    .filter-btn.is-on { border-color: #b9ddd0; background: #dff0e9; color: var(--cta); }
+    .filter-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+    .tab-count {
+      display: inline-block; min-width: 1.4em; margin-inline-start: 0.25rem;
+      font-weight: 800; opacity: 0.75;
+    }
+    .tag-btn.tag-applied.is-on { border-color: #5b7c99; background: #e8f0f7; color: #1e3a54; }
+    .learn-panel {
+      margin: 0 0 1.25rem; padding: 1rem 1.1rem; border: 1px solid var(--line);
+      border-radius: 12px; background: var(--panel);
+    }
+    .learn-panel h2 { margin: 0 0 0.35rem; font-size: 1.05rem; }
+    .learn-panel h2 + .learn-lead { margin: 0 0 0.85rem; color: var(--muted); font-size: 0.9rem; }
+    .learn-panel h2:not(:first-child) { margin-top: 1.1rem; }
+    .suggestions { display: grid; gap: 0.65rem; }
+    .suggestion {
+      border: 1px solid var(--line); border-radius: 10px; padding: 0.75rem 0.85rem;
+      background: #f7faf8;
+    }
+    .suggestion strong { display: block; margin-bottom: 0.35rem; }
+    .suggestion .row { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.55rem; }
+    .suggestion button {
+      appearance: none; border: 1px solid var(--line); background: #fff; color: var(--ink);
+      font: inherit; font-weight: 700; padding: 0.45rem 0.7rem; border-radius: 8px; cursor: pointer;
+    }
+    .suggestion button.primary { background: var(--cta); color: #fff; border-color: var(--cta); }
+    .card-actions {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 0.5rem 1rem; margin-top: 0.35rem;
+    }
+    .tag-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+    .tag-btn {
+      appearance: none; border: 1px solid var(--line); background: var(--panel);
+      color: var(--ink); font: inherit; font-size: 0.82rem; font-weight: 700;
+      padding: 0.4rem 0.65rem; border-radius: 8px; min-height: 2.5rem; cursor: pointer;
+    }
+    .tag-btn.is-on.tag-up { border-color: #b9ddd0; background: #dff0e9; color: var(--cta); }
+    .tag-btn.is-on.tag-down { border-color: #ebc9b0; background: #f7e4d6; color: #8a3f18; }
+    .tag-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+    .tag-state {
+      font-size: 0.8rem; color: var(--muted); min-height: 1.1em;
+    }
+    .tag-state[data-empty="1"] { opacity: 0; }
+    .job[data-tag="relevant"] { box-shadow: inset 0 0 0 1px #b9ddd0; }
+    .job[data-tag="not_relevant"] { box-shadow: inset 0 0 0 1px #ebc9b0; }
+    .rule-note { margin: 0.35rem 0; font-size: 0.85rem; color: var(--muted); }
+    .job.is-filter-hidden { display: none; }
+    .sheet-backdrop {
+      position: fixed; inset: 0; background: rgba(16,24,22,0.45);
+      opacity: 0; pointer-events: none; transition: opacity 0.18s ease;
+      z-index: 40;
+    }
+    .sheet-backdrop.is-open { opacity: 1; pointer-events: auto; }
+    .sheet {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+      display: flex; flex-direction: column;
+      background: var(--panel); border-radius: 16px 16px 0 0;
+      border: 1px solid var(--line); border-bottom: 0;
+      padding: 0;
+      transform: translateY(110%); transition: transform 0.2s ease;
+      max-height: min(100dvh, 100vh); overflow: hidden;
+    }
+    .sheet.is-open { transform: translateY(0); }
+    .sheet-body {
+      flex: 0 1 auto; overflow: visible; padding: 0.85rem 1rem 0.35rem;
+    }
+    .sheet-footer {
+      flex: 0 0 auto;
+      padding: 0.65rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line);
+      background: var(--panel);
+      position: sticky; bottom: 0;
+    }
+    @media (min-width: 720px) {
+      .sheet {
+        left: 50%; right: auto; bottom: auto; top: 12vh;
+        width: min(420px, calc(100vw - 2rem));
+        transform: translate(-50%, -8px) scale(0.98); opacity: 0;
+        border-radius: 14px; border-bottom: 1px solid var(--line);
+        pointer-events: none; max-height: min(88vh, 560px);
+      }
+      .sheet.is-open { transform: translate(-50%, 0) scale(1); opacity: 1; pointer-events: auto; }
+    }
+    .sheet h3 { margin: 0 0 0.4rem; font-size: 1.02rem; }
+    .sheet-job {
+      color: var(--muted); font-size: 0.85rem; margin: 0 0 0.65rem;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 0.35rem; }
+    .chip {
+      appearance: none; -webkit-appearance: none;
+      border: 2px solid var(--line); background: #f7faf8;
+      color: var(--ink); font: inherit; font-size: 0.9rem; font-weight: 600;
+      padding: 0.55rem 0.7rem; border-radius: 12px; cursor: pointer; min-height: 2.55rem;
+      flex: 1 1 calc(50% - 0.4rem); text-align: start;
+    }
+    .chip.is-on {
+      border-color: var(--cta); background: #dff0e9; color: var(--cta); font-weight: 800;
+      box-shadow: inset 0 0 0 1px var(--cta);
+    }
+    .chip.is-on::before { content: "✓ "; font-weight: 800; }
+    .chip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+    .sheet-note-wrap[hidden] { display: none; }
+    .sheet label { display: block; font-size: 0.85rem; font-weight: 700; margin: 0.35rem 0 0.3rem; }
+    .sheet textarea {
+      width: 100%; min-height: 2.75rem; max-height: 5.5rem; resize: vertical; font: inherit;
+      border: 1px solid var(--line); border-radius: 10px; padding: 0.55rem;
+      color: var(--ink); background: #fff;
+    }
+    .sheet textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+    .sheet-actions {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .sheet-actions button {
+      appearance: none; -webkit-appearance: none;
+      border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+      font: inherit; font-weight: 700; padding: 0.65rem 0.9rem; border-radius: 10px;
+      min-height: 2.75rem; cursor: pointer;
+    }
+    .sheet-actions button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+    /* Must beat .sheet-actions button (0,2,0) — was white-on-white blank Save */
+    .sheet-actions button.sheet-save {
+      background: var(--cta); color: #fff; border-color: var(--cta);
+    }
+    .sheet-actions button.sheet-clear { color: #8a3f18; }
+    .sheet-actions button.sheet-clear[hidden] { display: none; }
+    .sheet-error { color: #8a3f18; font-size: 0.85rem; min-height: 1.2em; margin: 0 0 0.55rem; font-weight: 600; }
+    @media (prefers-reduced-motion: reduce) {
+      .sheet, .sheet-backdrop { transition: none; }
+    }
+    .btn-analyze {
+      appearance: none; -webkit-appearance: none;
+      border: 1px solid var(--cta); background: #dff0e9; color: var(--cta);
+      font: inherit; font-weight: 700; font-size: 0.88rem;
+      padding: 0.45rem 0.75rem; border-radius: 10px; min-height: 2.5rem; cursor: pointer;
+    }
+    .btn-analyze:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+    .card-actions-left { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; }
+    .claude-sent {
+      font-size: 0.75rem; font-weight: 700; color: #5a6a64;
+      background: #eef2f0; border-radius: 6px; padding: 0.12rem 0.4rem;
+    }
+    .claude-sent[hidden] { display: none; }
+    .toast {
+      position: fixed; left: 50%; bottom: calc(1.25rem + env(safe-area-inset-bottom));
+      transform: translateX(-50%); z-index: 80;
+      background: #0e1614; color: #f4f7f5; font-weight: 700; font-size: 0.92rem;
+      padding: 0.7rem 1.1rem; border-radius: 999px; box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+    }
+    .toast.is-on { opacity: 1; }
+    #copy-fallback-sheet textarea {
+      width: 100%; min-height: 10rem; font: inherit; font-size: 0.85rem;
+      border: 1px solid var(--line); border-radius: 10px; padding: 0.65rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="brand">RADAR<span>.</span></p>
+      <p>Rule-filtered · Claude rates outside · Updated Monday, 23 November 2026 at 14:49</p>
+      <p class="hero-links"><a href="./rules.html">Rules</a> · <a href="./sources.html">Sources</a></p>
+    </div>
+  </header>
+  <main>
+    <div class="stats" role="group" aria-label="Scan summary">
+      <div class="stat"><strong>18</strong><span>Shown on dashboard</span></div>
+      <div class="stat"><strong>18</strong><span>Passed filters</span></div>
+      <div class="stat"><strong>141</strong><span>LinkedIn raw</span></div>
+      <div class="stat"><strong>153</strong><span>Company boards</span></div>
+    </div>
+    <p class="sources">
+      Sources: Workday 153 · Comeet 0 · LinkedIn 141 · <a href="./sources.html">All sources</a>
+    </p>
+    <p class="sources"><strong>Check yourself</strong> (these careers sites block automated scans; their roles often still appear via LinkedIn): <a href="https://amat.wd1.myworkdayjobs.com/External" target="_blank" rel="noopener">Applied Materials</a> · <a href="https://hp.wd5.myworkdayjobs.com/ExternalCareerSite" target="_blank" rel="noopener">HP Indigo</a> · <a href="https://kla.wd1.myworkdayjobs.com/Israel" target="_blank" rel="noopener">KLA</a> · <a href="https://intel.wd1.myworkdayjobs.com/External" target="_blank" rel="noopener">Intel Israel</a> · <a href="https://medtronic.wd1.myworkdayjobs.com/MedtronicCareers" target="_blank" rel="noopener">Medtronic Israel</a> · <a href="https://philips.wd3.myworkdayjobs.com/jobs-and-careers" target="_blank" rel="noopener">Philips Israel</a> · <a href="https://gehc.wd5.myworkdayjobs.com/GEHC_ExternalSite" target="_blank" rel="noopener">GE HealthCare Israel</a> · <a href="https://www.novami.com/location_filter/israel/" target="_blank" rel="noopener">Nova</a> · <a href="https://careers.kornit.com/all-positions/" target="_blank" rel="noopener">Kornit Digital</a></p>
+    <div class="toolbar" role="group" aria-label="Scan actions">
+      <button type="button" class="primary" id="btn-scan">Search now</button>
+      <button type="button" id="btn-add-job">Add job</button>
+      <button type="button" id="btn-rescore" hidden>Re-score</button>
+      <a class="tool-btn" href="./sources.html">Sources</a>
+      <span id="scan-status" aria-live="polite"></span>
+    </div>
+    <div class="scan-extra" id="scan-extra" hidden>
+      <label for="extra-keywords">Extra keywords this run (optional, comma-separated)</label>
+      <input id="extra-keywords" type="text" placeholder="e.g. Production Engineer, מנהל ייצור" />
+    </div>
+    <div class="add-panel" id="add-panel" hidden>
+      <label for="add-url">Job URL (LinkedIn or careers page)</label>
+      <input id="add-url" type="url" placeholder="https://…" />
+      <label for="add-text">Or paste full job text</label>
+      <textarea id="add-text" placeholder="Paste the job description here…"></textarea>
+      <label for="add-title">Title override (optional)</label>
+      <input id="add-title" type="text" />
+      <label for="add-company">Company override (optional)</label>
+      <input id="add-company" type="text" />
+      <div class="add-actions">
+        <button type="button" class="primary" id="add-save">Save job</button>
+        <button type="button" id="add-cancel">Cancel</button>
+      </div>
+      <p class="sheet-error" id="add-error" aria-live="polite"></p>
+    </div>
+    <div class="filters" role="tablist" aria-label="Job tabs">
+      <button type="button" class="filter-btn is-on" data-filter="untagged" aria-pressed="true">New <span class="tab-count" data-count-for="untagged">0</span></button>
+      <button type="button" class="filter-btn" data-filter="relevant" aria-pressed="false">Relevant <span class="tab-count" data-count-for="relevant">0</span></button>
+      <button type="button" class="filter-btn" data-filter="applied" aria-pressed="false">Applied <span class="tab-count" data-count-for="applied">0</span></button>
+      <button type="button" class="filter-btn" data-filter="not_relevant" aria-pressed="false">Not relevant <span class="tab-count" data-count-for="not_relevant">0</span></button>
+
+    </div>
+    <section class="learn-panel" id="learn-panel" hidden>
+      <h2>Suggested filters</h2>
+      <p class="learn-lead">Approve only what you want hidden. Nothing auto-hides.</p>
+      <div id="suggestions" class="suggestions"></div>
+      <h2>Approved filters</h2>
+      <div id="approved-filters" class="suggestions"></div>
+    </section>
+    <div class="jobs">
+      <article class="job" data-rec="pass" data-id="linkedin-4484377718" data-tag="untagged" data-title="Industrial Engineer" data-company="Applied Materials - Israel" data-location="Rehovot, Center District, Israel" data-source="LinkedIn" data-url="https://il.linkedin.com/jobs/view/industrial-engineer-at-applied-materials-israel-4484377718" data-posted="2026-11-12" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">LinkedIn</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Rehovot, Center District, Israel</span><span class="sep" aria-hidden="true">·</span><span>12/11/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://il.linkedin.com/jobs/view/industrial-engineer-at-applied-materials-israel-4484377718" target="_blank" rel="noopener noreferrer" dir="auto">Industrial Engineer</a></h2>
+    <p class="company" dir="auto">Applied Materials - Israel</p>
+  </header>
+  <p class="rule-note">Title: industrial engineer</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://il.linkedin.com/jobs/view/industrial-engineer-at-applied-materials-israel-4484377718" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="linkedin-4489906835" data-tag="untagged" data-title="Automation Engineer" data-company="JobsSeek" data-location="Yavne, Center District, Israel" data-source="LinkedIn" data-url="https://il.linkedin.com/jobs/view/automation-engineer-at-jobsseek-4489906835" data-posted="2026-11-11" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">LinkedIn</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Yavne, Center District, Israel</span><span class="sep" aria-hidden="true">·</span><span>11/11/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://il.linkedin.com/jobs/view/automation-engineer-at-jobsseek-4489906835" target="_blank" rel="noopener noreferrer" dir="auto">Automation Engineer</a></h2>
+    <p class="company" dir="auto">JobsSeek</p>
+  </header>
+  <p class="rule-note">Title: automation engineer</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://il.linkedin.com/jobs/view/automation-engineer-at-jobsseek-4489906835" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="linkedin-4489243426" data-tag="untagged" data-title="Project Manager &amp; Operational Excellence" data-company="MediWound" data-location="Yavne, Center District, Israel" data-source="LinkedIn" data-url="https://il.linkedin.com/jobs/view/project-manager-operational-excellence-at-mediwound-4489243426" data-posted="2026-11-12" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">LinkedIn</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Yavne, Center District, Israel</span><span class="sep" aria-hidden="true">·</span><span>12/11/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://il.linkedin.com/jobs/view/project-manager-operational-excellence-at-mediwound-4489243426" target="_blank" rel="noopener noreferrer" dir="auto">Project Manager &amp; Operational Excellence</a></h2>
+    <p class="company" dir="auto">MediWound</p>
+  </header>
+  <p class="rule-note">Title: operational excellence</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://il.linkedin.com/jobs/view/project-manager-operational-excellence-at-mediwound-4489243426" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="linkedin-4487697316" data-tag="untagged" data-title="מנהל/ת פרוייקטים להעברת ייצור" data-company="CONTROP Precision Technologies Ltd." data-location="Kfar Saba, Center District, Israel" data-source="LinkedIn" data-url="https://il.linkedin.com/jobs/view/%D7%9E%D7%A0%D7%94%D7%9C-%D7%AA-%D7%A4%D7%A8%D7%95%D7%99%D7%99%D7%A7%D7%98%D7%99%D7%9D-%D7%9C%D7%94%D7%A2%D7%91%D7%A8%D7%AA-%D7%99%D7%99%D7%A6%D7%95%D7%A8-at-controp-precision-technologies-ltd-4487697316" data-posted="2026-11-09" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">LinkedIn</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Kfar Saba, Center District, Israel</span><span class="sep" aria-hidden="true">·</span><span>09/11/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://il.linkedin.com/jobs/view/%D7%9E%D7%A0%D7%94%D7%9C-%D7%AA-%D7%A4%D7%A8%D7%95%D7%99%D7%99%D7%A7%D7%98%D7%99%D7%9D-%D7%9C%D7%94%D7%A2%D7%91%D7%A8%D7%AA-%D7%99%D7%99%D7%A6%D7%95%D7%A8-at-controp-precision-technologies-ltd-4487697316" target="_blank" rel="noopener noreferrer" dir="auto">מנהל/ת פרוייקטים להעברת ייצור</a></h2>
+    <p class="company" dir="auto">CONTROP Precision Technologies Ltd.</p>
+  </header>
+  <p class="rule-note">Title: ייצור, מנהל פרוייקטים+ייצור</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://il.linkedin.com/jobs/view/%D7%9E%D7%A0%D7%94%D7%9C-%D7%AA-%D7%A4%D7%A8%D7%95%D7%99%D7%99%D7%A7%D7%98%D7%99%D7%9D-%D7%9C%D7%94%D7%A2%D7%91%D7%A8%D7%AA-%D7%99%D7%99%D7%A6%D7%95%D7%A8-at-controp-precision-technologies-ltd-4487697316" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="linkedin-4487638938" data-tag="untagged" data-title="NPI &amp; Production Engineer" data-company="HISKY" data-location="Rosh HaAyin, Center District, Israel" data-source="LinkedIn" data-url="https://il.linkedin.com/jobs/view/npi-production-engineer-at-hisky-4487638938" data-posted="2026-11-08" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">LinkedIn</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Rosh HaAyin, Center District, Israel</span><span class="sep" aria-hidden="true">·</span><span>08/11/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://il.linkedin.com/jobs/view/npi-production-engineer-at-hisky-4487638938" target="_blank" rel="noopener noreferrer" dir="auto">NPI &amp; Production Engineer</a></h2>
+    <p class="company" dir="auto">HISKY</p>
+  </header>
+  <p class="rule-note">Title: npi+production, production+engineer</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://il.linkedin.com/jobs/view/npi-production-engineer-at-hisky-4487638938" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="workday-medtronic-R78174-1" data-tag="untagged" data-title="Manufacturing Engineer - temporary (9-month contract)" data-company="Medtronic Israel" data-location="Jerusalem, Jerusalem, Israel" data-source="Workday/Medtronic Israel" data-url="https://medtronic.wd1.myworkdayjobs.com/MedtronicCareers/job/Jerusalem-Jerusalem-Israel/Manufacturing-Engineer_R78174-1" data-posted="2026-11-04T07:59:15.109Z" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">Workday/Medtronic Israel</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Jerusalem, Jerusalem, Israel</span><span class="sep" aria-hidden="true">·</span><span>04/11/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://medtronic.wd1.myworkdayjobs.com/MedtronicCareers/job/Jerusalem-Jerusalem-Israel/Manufacturing-Engineer_R78174-1" target="_blank" rel="noopener noreferrer" dir="auto">Manufacturing Engineer - temporary (9-month contract)</a></h2>
+    <p class="company" dir="auto">Medtronic Israel</p>
+  </header>
+  <p class="rule-note">Title: manufacturing engineer, manufacturing</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://medtronic.wd1.myworkdayjobs.com/MedtronicCareers/job/Jerusalem-Jerusalem-Israel/Manufacturing-Engineer_R78174-1" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="linkedin-4487408681" data-tag="untagged" data-title="System Engineer – Production Support for Laser and Observation Systems" data-company="Ethosia" data-location="Modiin-Maccabim-Reut, Center District, Israel" data-source="LinkedIn" data-url="https://il.linkedin.com/jobs/view/system-engineer-%E2%80%93-production-support-for-laser-and-observation-systems-at-ethosia-4487408681" data-posted="2026-11-13" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">LinkedIn</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Modiin-Maccabim-Reut, Center District, Israel</span><span class="sep" aria-hidden="true">·</span><span>13/11/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://il.linkedin.com/jobs/view/system-engineer-%E2%80%93-production-support-for-laser-and-observation-systems-at-ethosia-4487408681" target="_blank" rel="noopener noreferrer" dir="auto">System Engineer – Production Support for Laser and Observation Systems</a></h2>
+    <p class="company" dir="auto">Ethosia</p>
+  </header>
+  <p class="rule-note">Title: production+engineer</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://il.linkedin.com/jobs/view/system-engineer-%E2%80%93-production-support-for-laser-and-observation-systems-at-ethosia-4487408681" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="linkedin-4490381677" data-tag="untagged" data-title="Head of Assembly Division" data-company="Unknown company" data-location="Ashdod, South District, Israel" data-source="LinkedIn" data-url="https://www.linkedin.com/jobs/view/4490381677" data-posted="2026-11-12" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">LinkedIn</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Ashdod, South District, Israel</span><span class="sep" aria-hidden="true">·</span><span>12/11/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://www.linkedin.com/jobs/view/4490381677" target="_blank" rel="noopener noreferrer" dir="auto">Head of Assembly Division</a></h2>
+    <p class="company" dir="auto">Unknown company</p>
+  </header>
+  <p class="rule-note">Title: assembly+division</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://www.linkedin.com/jobs/view/4490381677" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="linkedin-4484372894" data-tag="untagged" data-title="Manufacturing Execution &amp; Systems Eng" data-company="Applied Materials - Israel" data-location="Rehovot, Center District, Israel" data-source="LinkedIn" data-url="https://il.linkedin.com/jobs/view/manufacturing-execution-systems-eng-at-applied-materials-israel-4484372894" data-posted="2026-11-12" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">LinkedIn</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Rehovot, Center District, Israel</span><span class="sep" aria-hidden="true">·</span><span>12/11/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://il.linkedin.com/jobs/view/manufacturing-execution-systems-eng-at-applied-materials-israel-4484372894" target="_blank" rel="noopener noreferrer" dir="auto">Manufacturing Execution &amp; Systems Eng</a></h2>
+    <p class="company" dir="auto">Applied Materials - Israel</p>
+  </header>
+  <p class="rule-note">Title: manufacturing</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://il.linkedin.com/jobs/view/manufacturing-execution-systems-eng-at-applied-materials-israel-4484372894" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="linkedin-4489457829" data-tag="untagged" data-title="מנהל/ת מצוינות תפעולית למרכז הלוגיסטי של אסם נסטלה" data-company="Nestlé" data-location="Hevel Modiin Regional Council, Center District, Israel" data-source="LinkedIn" data-url="https://il.linkedin.com/jobs/view/%D7%9E%D7%A0%D7%94%D7%9C-%D7%AA-%D7%9E%D7%A6%D7%95%D7%99%D7%A0%D7%95%D7%AA-%D7%AA%D7%A4%D7%A2%D7%95%D7%9C%D7%99%D7%AA-%D7%9C%D7%9E%D7%A8%D7%9B%D7%96-%D7%94%D7%9C%D7%95%D7%92%D7%99%D7%A1%D7%98%D7%99-%D7%A9%D7%9C-%D7%90%D7%A1%D7%9D-%D7%A0%D7%A1%D7%98%D7%9C%D7%94-at-nestl%C3%A9-4489457829" data-posted="2026-11-10" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">LinkedIn</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Hevel Modiin Regional Council, Center District, Israel</span><span class="sep" aria-hidden="true">·</span><span>10/11/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://il.linkedin.com/jobs/view/%D7%9E%D7%A0%D7%94%D7%9C-%D7%AA-%D7%9E%D7%A6%D7%95%D7%99%D7%A0%D7%95%D7%AA-%D7%AA%D7%A4%D7%A2%D7%95%D7%9C%D7%99%D7%AA-%D7%9C%D7%9E%D7%A8%D7%9B%D7%96-%D7%94%D7%9C%D7%95%D7%92%D7%99%D7%A1%D7%98%D7%99-%D7%A9%D7%9C-%D7%90%D7%A1%D7%9D-%D7%A0%D7%A1%D7%98%D7%9C%D7%94-at-nestl%C3%A9-4489457829" target="_blank" rel="noopener noreferrer" dir="auto">מנהל/ת מצוינות תפעולית למרכז הלוגיסטי של אסם נסטלה</a></h2>
+    <p class="company" dir="auto">Nestlé</p>
+  </header>
+  <p class="rule-note">Title: מצוינות תפעולית</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://il.linkedin.com/jobs/view/%D7%9E%D7%A0%D7%94%D7%9C-%D7%AA-%D7%9E%D7%A6%D7%95%D7%99%D7%A0%D7%95%D7%AA-%D7%AA%D7%A4%D7%A2%D7%95%D7%9C%D7%99%D7%AA-%D7%9C%D7%9E%D7%A8%D7%9B%D7%96-%D7%94%D7%9C%D7%95%D7%92%D7%99%D7%A1%D7%98%D7%99-%D7%A9%D7%9C-%D7%90%D7%A1%D7%9D-%D7%A0%D7%A1%D7%98%D7%9C%D7%94-at-nestl%C3%A9-4489457829" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="linkedin-4422736015" data-tag="untagged" data-title="מהנדס.ת תהליך" data-company="Elbit Systems Israel" data-location="Ramla, Center District, Israel" data-source="LinkedIn" data-url="https://il.linkedin.com/jobs/view/%D7%9E%D7%94%D7%A0%D7%93%D7%A1-%D7%AA-%D7%AA%D7%94%D7%9C%D7%99%D7%9A-at-elbit-systems-israel-4422736015" data-posted="2026-11-09" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">LinkedIn</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Ramla, Center District, Israel</span><span class="sep" aria-hidden="true">·</span><span>09/11/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://il.linkedin.com/jobs/view/%D7%9E%D7%94%D7%A0%D7%93%D7%A1-%D7%AA-%D7%AA%D7%94%D7%9C%D7%99%D7%9A-at-elbit-systems-israel-4422736015" target="_blank" rel="noopener noreferrer" dir="auto">מהנדס.ת תהליך</a></h2>
+    <p class="company" dir="auto">Elbit Systems Israel</p>
+  </header>
+  <p class="rule-note">Title: מהנדס תהליך</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://il.linkedin.com/jobs/view/%D7%9E%D7%94%D7%A0%D7%93%D7%A1-%D7%AA-%D7%AA%D7%94%D7%9C%D7%99%D7%9A-at-elbit-systems-israel-4422736015" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="linkedin-4445175897" data-tag="untagged" data-title="Process Engineer" data-company="Stratasys" data-location="Kiryat Gat, South District, Israel" data-source="LinkedIn" data-url="https://il.linkedin.com/jobs/view/process-engineer-at-stratasys-4445175897" data-posted="2026-11-09" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">LinkedIn</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Kiryat Gat, South District, Israel</span><span class="sep" aria-hidden="true">·</span><span>09/11/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://il.linkedin.com/jobs/view/process-engineer-at-stratasys-4445175897" target="_blank" rel="noopener noreferrer" dir="auto">Process Engineer</a></h2>
+    <p class="company" dir="auto">Stratasys</p>
+  </header>
+  <p class="rule-note">Title: process engineer</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://il.linkedin.com/jobs/view/process-engineer-at-stratasys-4445175897" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="linkedin-4488786131" data-tag="untagged" data-title="Production Team Leader" data-company="Exodigo" data-location="Tel Aviv-Yafo, Tel Aviv District, Israel" data-source="LinkedIn" data-url="https://il.linkedin.com/jobs/view/production-team-leader-at-exodigo-4488786131" data-posted="2026-11-08" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">LinkedIn</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Tel Aviv-Yafo, Tel Aviv District, Israel</span><span class="sep" aria-hidden="true">·</span><span>08/11/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://il.linkedin.com/jobs/view/production-team-leader-at-exodigo-4488786131" target="_blank" rel="noopener noreferrer" dir="auto">Production Team Leader</a></h2>
+    <p class="company" dir="auto">Exodigo</p>
+  </header>
+  <p class="rule-note">Title: production+leader</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://il.linkedin.com/jobs/view/production-team-leader-at-exodigo-4488786131" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="linkedin-4487648309" data-tag="untagged" data-title="Advanced Composites &amp; Manufacturing Technologies Expert" data-company="abra" data-location="Center District, Israel" data-source="LinkedIn" data-url="https://il.linkedin.com/jobs/view/advanced-composites-manufacturing-technologies-expert-at-abra-4487648309" data-posted="2026-11-08" data-location-unclear="1" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">LinkedIn</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Center District, Israel</span><span class="loc-unclear" title="City not specified on the posting">Location unclear</span><span class="sep" aria-hidden="true">·</span><span>08/11/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://il.linkedin.com/jobs/view/advanced-composites-manufacturing-technologies-expert-at-abra-4487648309" target="_blank" rel="noopener noreferrer" dir="auto">Advanced Composites &amp; Manufacturing Technologies Expert</a></h2>
+    <p class="company" dir="auto">abra</p>
+  </header>
+  <p class="rule-note">Title: manufacturing</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://il.linkedin.com/jobs/view/advanced-composites-manufacturing-technologies-expert-at-abra-4487648309" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="workday-amat-R2628115" data-tag="untagged" data-title="Mechanical Suppliers Engineer" data-company="Applied Materials" data-location="Rehovot,ISR" data-source="Workday/Applied Materials" data-url="https://amat.wd1.myworkdayjobs.com/External/job/RehovotISR/Mechanical-Suppliers-Engineer_R2628115" data-posted="2026-10-30T07:59:06.190Z" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">Workday/Applied Materials</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Rehovot,ISR</span><span class="sep" aria-hidden="true">·</span><span>30/10/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://amat.wd1.myworkdayjobs.com/External/job/RehovotISR/Mechanical-Suppliers-Engineer_R2628115" target="_blank" rel="noopener noreferrer" dir="auto">Mechanical Suppliers Engineer</a></h2>
+    <p class="company" dir="auto">Applied Materials</p>
+  </header>
+  <p class="rule-note">Title: suppliers engineer</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://amat.wd1.myworkdayjobs.com/External/job/RehovotISR/Mechanical-Suppliers-Engineer_R2628115" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="workday-amat-R2627114-1" data-tag="untagged" data-title="Motion &amp; Control Supplier Engineer" data-company="Applied Materials" data-location="Rehovot,ISR" data-source="Workday/Applied Materials" data-url="https://amat.wd1.myworkdayjobs.com/External/job/RehovotISR/Motion---Control-Supplier-Engineer_R2627114-1" data-posted="2026-10-30T07:59:06.190Z" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">Workday/Applied Materials</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Rehovot,ISR</span><span class="sep" aria-hidden="true">·</span><span>30/10/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://amat.wd1.myworkdayjobs.com/External/job/RehovotISR/Motion---Control-Supplier-Engineer_R2627114-1" target="_blank" rel="noopener noreferrer" dir="auto">Motion &amp; Control Supplier Engineer</a></h2>
+    <p class="company" dir="auto">Applied Materials</p>
+  </header>
+  <p class="rule-note">Title: supplier engineer</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://amat.wd1.myworkdayjobs.com/External/job/RehovotISR/Motion---Control-Supplier-Engineer_R2627114-1" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="workday-hp-3169796-2" data-tag="untagged" data-title="Hardware Manufacturing Integrator" data-company="HP Indigo" data-location="Kiryat-Gat, South District, Israel" data-source="Workday/HP Indigo" data-url="https://hp.wd5.myworkdayjobs.com/ExternalCareerSite/job/Kiryat-Gat-South-District-Israel/Hardware-Manufacturing-Integrator_3169796-2" data-posted="2026-10-21T06:59:09.024Z" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">Workday/HP Indigo</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Kiryat-Gat, South District, Israel</span><span class="sep" aria-hidden="true">·</span><span>21/10/2026</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://hp.wd5.myworkdayjobs.com/ExternalCareerSite/job/Kiryat-Gat-South-District-Israel/Hardware-Manufacturing-Integrator_3169796-2" target="_blank" rel="noopener noreferrer" dir="auto">Hardware Manufacturing Integrator</a></h2>
+    <p class="company" dir="auto">HP Indigo</p>
+  </header>
+  <p class="rule-note">Title: manufacturing</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://hp.wd5.myworkdayjobs.com/ExternalCareerSite/job/Kiryat-Gat-South-District-Israel/Hardware-Manufacturing-Integrator_3169796-2" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+<article class="job" data-rec="pass" data-id="workday-amat-R2620070-1" data-tag="untagged" data-title="Motion control engineer" data-company="Applied Materials" data-location="Rehovot,ISR" data-source="Workday/Applied Materials" data-url="https://amat.wd1.myworkdayjobs.com/External/job/RehovotISR/Motion-control-engineer_R2620070-1" data-posted="" data-location-unclear="0" data-claude-sent="0">
+  <header>
+    <div class="meta"><span dir="auto">Workday/Applied Materials</span><span class="sep" aria-hidden="true">·</span><span dir="auto">Rehovot,ISR</span><span class="sep" aria-hidden="true">·</span><span>No date</span><span class="new">New</span> <span class="claude-sent" data-claude-sent="0" hidden>Sent to Claude</span></div>
+    <h2><a href="https://amat.wd1.myworkdayjobs.com/External/job/RehovotISR/Motion-control-engineer_R2620070-1" target="_blank" rel="noopener noreferrer" dir="auto">Motion control engineer</a></h2>
+    <p class="company" dir="auto">Applied Materials</p>
+  </header>
+  <p class="rule-note">Title: control engineer</p>
+  <div class="card-actions">
+    <div class="card-actions-left">
+      <a class="cta" href="https://amat.wd1.myworkdayjobs.com/External/job/RehovotISR/Motion-control-engineer_R2620070-1" target="_blank" rel="noopener noreferrer">Open job posting<span aria-hidden="true"> →</span></a>
+      <button type="button" class="btn-analyze" data-analyze="1">Analyze in Claude</button>
+    </div>
+    <div class="tag-row" role="group" aria-label="Relevance tag">
+      <button type="button" class="tag-btn tag-up" data-verdict="relevant" aria-pressed="false" aria-label="Mark relevant">✅ Relevant</button>
+      <button type="button" class="tag-btn tag-down" data-verdict="not_relevant" aria-pressed="false" aria-label="Mark not relevant">❌ Not relevant</button>
+      <button type="button" class="tag-btn tag-applied" data-verdict="applied" aria-pressed="false" aria-label="Mark applied">📨 Applied</button>
+      <span class="tag-state" data-empty="1"></span>
+    </div>
+  </div>
+</article>
+    </div>
+    <details class="filtered-out"><summary>Filtered out (276)</summary>
+      <p>Filter: fetched 294 · duplicates 1 · excluded by rule 275 · hidden by tag 0 · shown 18</p>
+      <ul class="filtered-out-list"><li><span dir="auto">Manufacturing Instructor (FaST)</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">NPI Installation Engineer</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">Customer Success</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">Systems Integration Engineer</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">R&amp;D System Integration</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">OMD Final Integration Engineer</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">Final Integration Engineer</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">Installation Team Manager</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">Logistics Coordinator</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">MDE Mechanical Engineer</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">CA Flow and Performance (CFP) Engineer</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">AP Manager, Controller</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">Stages Lab Technician</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">Senior Buyer</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">Algorithms Developer Tech Lead</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">Configuration Analyst</span> · <span dir="auto">KLA</span> — Outside allowed cities: Migdal Ha'emek, Israel</li><li><span dir="auto">Senior Post Silicon CPU Debug Engineer</span> · <span dir="auto">Intel Israel</span> — Outside allowed cities: Israel, Haifa</li><li><span dir="auto">Senior ASIC Verification Engineer</span> · <span dir="auto">Intel Israel</span> — Outside allowed cities: Israel, Haifa</li><li><span dir="auto">Senior ASIC DFT Engineer</span> · <span dir="auto">Intel Israel</span> — Outside allowed cities: Israel, Haifa</li><li><span dir="auto">Security Researcher Technical Lead</span> · <span dir="auto">Intel Israel</span> — Outside allowed cities: Israel, Haifa</li><li><span dir="auto">Senior CPU Logic Design Engineer</span> · <span dir="auto">Intel Israel</span> — Outside allowed cities: Israel, Haifa</li><li><span dir="auto">PnP System Validation and Integration Engineer</span> · <span dir="auto">Intel Israel</span> — Outside allowed cities: Israel, Haifa</li><li><span dir="auto">Senior Mechanical Design Engineer</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Caesarea, Haifa, Israel</li><li><span dir="auto">Senior Systems Engineer</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Caesarea, Haifa, Israel</li><li><span dir="auto">Mechanical Engineering Manager</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Caesarea, Haifa, Israel</li><li><span dir="auto">Senior Product Security Engineer</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Caesarea, Haifa, Israel</li><li><span dir="auto">Senior Software DevOps Engineer</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Caesarea, Haifa, Israel</li><li><span dir="auto">Software Automation Engineer</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Caesarea, Haifa, Israel</li><li><span dir="auto">Senior Test Engineer</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Caesarea, Haifa, Israel</li><li><span dir="auto">Software Test Engineer - Student Position</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Caesarea, Haifa, Israel</li><li><span dir="auto">Senior Process Engineer</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Yoqneam Illit, North, Israel</li><li><span dir="auto">Senior Analog and RF Engineer</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Yoqneam Illit, North, Israel</li><li><span dir="auto">Senior Systems Engineer</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Yoqneam Illit, North, Israel</li><li><span dir="auto">Senior Manufacturing Engineer</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Yoqneam Illit, North, Israel</li><li><span dir="auto">Engineering Technician - temporary position (1-year contract)</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Yoqneam Illit, North, Israel</li><li><span dir="auto">Junior Engineering Technician - temporary position (1-year contract)</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Yoqneam Illit, North, Israel</li><li><span dir="auto">Senior Manufacturing Quality Engineer - temporary position (1-year contract)</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Yoqneam Illit, North, Israel</li><li><span dir="auto">Manufacturing Quality Engineer - temporary position (1-year contract)</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Yoqneam Illit, North, Israel</li><li><span dir="auto">Manufacturing Supervisor</span> · <span dir="auto">Medtronic Israel</span> — Outside allowed cities: Yoqneam Illit, North, Israel</li><li><span dir="auto">Manual Assembler-מרכיב בחדר נקי</span> · <span dir="auto">Philips Israel</span> — Outside allowed cities: Haifa</li><li>…and 236 more</li></ul>
+    </details>
+  </main>
+  <footer>Private · personal use only · full profile is not shown here<br/>Tags sync via Cloudflare (PC + phone behind Access). Google Sheet tabs RADAR / Claude stay in sync after each scan.</footer>
+  <div class="sheet-backdrop" id="sheet-backdrop" hidden></div>
+  <div class="sheet" id="tag-sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden>
+    <div class="sheet-body">
+      <h3 id="sheet-title">Why not relevant?</h3>
+      <p class="sheet-job" id="sheet-job" dir="auto"></p>
+      <div class="chips" id="sheet-chips" role="group" aria-label="Reasons"></div>
+      <div class="sheet-note-wrap" id="sheet-note-wrap" hidden>
+        <label for="sheet-note" id="sheet-note-label">Note (optional)</label>
+        <textarea id="sheet-note" maxlength="500" placeholder="Optional detail" dir="auto"></textarea>
+      </div>
+    </div>
+    <div class="sheet-footer">
+      <p class="sheet-error" id="sheet-error" aria-live="polite"></p>
+      <div class="sheet-actions">
+        <button type="button" class="sheet-save" id="sheet-save">Save</button>
+        <button type="button" id="sheet-cancel">Cancel</button>
+        <button type="button" class="sheet-clear" id="sheet-clear" hidden>Remove tag</button>
+      </div>
+    </div>
+  </div>
+  <div class="sheet" id="copy-fallback-sheet" role="dialog" aria-modal="true" hidden>
+    <div class="sheet-body">
+      <h3>Copy failed — select all and copy</h3>
+      <p class="sheet-job">Description incomplete or clipboard blocked. Select the text and copy manually.</p>
+      <textarea id="copy-fallback-text" readonly dir="auto"></textarea>
+    </div>
+    <div class="sheet-footer">
+      <div class="sheet-actions">
+        <button type="button" class="sheet-save" id="copy-fallback-select">Select all</button>
+        <button type="button" id="copy-fallback-close">Close</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./demo.js"></script>
+  <script type="application/json" id="analyze-blocks">{"linkedin-4484377718":{"block":"JOB-RADAR ANALYZE\nTitle: Industrial Engineer\nCompany: Applied Materials - Israel\nLocation: Rehovot, Center District, Israel\nSource: LinkedIn | URL: https://il.linkedin.com/jobs/view/industrial-engineer-at-applied-materials-israel-4484377718\nPosted: 12 Nov 2026\nRadar flags: none\n--- POSTING START ---\nWho We Are\n Applied Materials is the global leader in materials science and engineering solutions that are at the foundation of virtually every new semiconductor chip and advanced display in the world. The equipment that we create and service is essential to advancing AI and accelerating the commercialization of next-generation semiconductor chips. Join us and push the boundaries of materials science and engineering in a company at the foundation of the electronics industry. The work we do together advances the world’s technology.\n What We Offer\n Location:\nRehovot,ISR\nYou’ll benefit from a supportive work culture that encourages you to learn, develop, and grow your career as you take on challenges and drive innovative solutions for our customers. We empower our team to push the boundaries of what is possible—while learning every day in a supportive leading global company. Visit our Careers website to learn more.\nAt Applied Materials, we care about the health and wellbeing of our employees. We’re committed to providing programs and support that encourage personal and professional growth and care for you at work, at home, or wherever you may go. Learn more about our benefits.\nWe are looking for smart, sharp, analytical, creative problem solvers industrial engineering who love to plan, work at high pace & have excellent interpersonal relations to join our team and our challenging business environment.\n What’s in it for you?\n By Joining our team, you will have the opportunity to be a part of a big and robust, yet growing and dynamic organization where you will have the ability to influence and make changes at technology company with non-compromised operational excellence standards.\n Our Group: Industrial engineering; Operations division.\n What you'll be doing:\n Industrial engineering in PDC Operations division is responsible for development & analysis of operational processes in order to ensure continuous improvement and organizational efficiency in main operational and financial KPIs, focused on productivity added value to production floor processes.\nAs part of the role you will get to lead independently various type of challenging projects in order to support line design optimization, cycle time reduction, ROI simulations, definition and implementation of new processes and infrastructures that supports efficient operations in low validity business environment and more.\nThe role includes high exposure to complex organizational processes and interfaces and requires high interpersonal skills, fast thinking, high independency and ability to lead activities with no formal authority.\n What you should have?\n - BSc in Industrial Engineering or equivalent - must\n- &gt;4 years of experience in IE/operational roles\n- Experience in project management- must\n- Excellent English – speaking, reading and writing - must\n- Very good analytical skills, sharp & fast thinking.\n- Customer orientation with the ability to influence and motivate internal and external interfaces\n- Ability to work under pressure, manage and prioritize multiple tasks in parallel and manage timelines & due dates independently.\n- Good verbal skills, ability to present and communicate key messages to management forums.\n- Ability to manage long term task & projects in addition to the daily execution.\n- Advantage for strong understanding of manufacturing & operational excellence processes.\n- Demonstrates conceptual and practical expertise in own discipline and basic knowledge of related disciplines\n- Knowledge of best practices methods, CI & Lean/Six Sigma expertise- advantage.\n Who we are?\n Applied Materials Israel is home to the Process Diagnostics and Control business unit (PDC). Based in Rehovot, we develop, manufacture and market cutting-edge machine learning and computer vision-based metrology and inspection products that are essential elements in wafer fabrication. By playing a significant role in enabling the production of the next generation of microchips, our expertise enables our customers to transform possibilities into reality.\n Additional Information\n Time Type:\n Full time\n Employee Type:\n Assignee / Regular\n Travel:\n Relocation Eligible:\n No\nApplied Materials is an Equal Opportunity Employer. Qualified applicants will receive consideration for employment without regard to race, color, national origin, citizenship, ancestry, religion, creed, sex, sexual orientation, gender identity, age, disability, veteran or military status, or any other basis prohibited by law.\n--- POSTING END ---","incomplete":false},"linkedin-4489906835":{"block":"JOB-RADAR ANALYZE\nTitle: Automation Engineer\nCompany: JobsSeek\nLocation: Yavne, Center District, Israel\nSource: LinkedIn | URL: https://il.linkedin.com/jobs/view/automation-engineer-at-jobsseek-4489906835\nPosted: 11 Nov 2026\nRadar flags: none\n--- POSTING START ---\nאנו מחפשים מנהל/ת אוטומציה / מהנדס/ת מפעל בעל/ת יוזמה ויכולות הובלה, שיצטרף/תצטרף לצוות ההנדסה שלנו. תפקיד זה מהווה הזדמנות ייחודית להשפיע על עתיד הייצור במפעל, תוך כדי הובלת חדשנות ויישום טכנולוגיות מתקדמות של Industry 4.0.\n בתפקיד זה תהיה/תהיי אחראי/ת על תכנון והטמעת מערכות אוטומציה מתקדמות, ניהול פרויקטים מורכבים מול ספקים גלובליים, והבטחת עמידה ביעדי ביצוע הנדסיים. מדובר בתפקיד מאתגר הדורש ראש גדול, נכונות לעבודה מאומצת ונסיעות לחו\"ל, ויכולת להוביל שינויים טכנולוגיים משמעותיים.\n תחומי האחריות:\n - תכנון רעיוני של מכונות וקווי ייצור אוטומטיים בהתאם לצורכי המפעל וההרכבות.\n- הובלה והטמעת פתרונות אוטומציה ויישומי Industry 4.0.\n- ניהול פרויקטים הנדסיים מקצה לקצה, משלב התכנון ועד ליישום ברצפת המפעל.\n- התנהלות מול מתכננים וספקים בארץ ובחו\"ל, כולל כתיבת מפרטים טכניים.\n- קליטה, הטמעה ופיקוח על ביצועי מכונות וטכנולוגיות חדשות במפעל.\n- אחריות לקידום חדשנות טכנולוגית ולשיפור מתמיד של תהליכי הייצור.\n הצטרף/הצטרפי אלינו והיה/תהיי חלק מצוות מוביל, המעצב את הדור הבא של תעשיית הייצור וההרכבות.\nRequirements:\n - מהנדס/ת מכונות עם לפחות 5-7 שנות ניסיון בתעשייה יצרנית – חובה .\n- ניסיון מוכח ב מכניקה , פנאומטיקה , בקרים מתוכנתים (PLCs) , הידראוליקה ו עיבוד שבבי – חובה .\n- אנגלית טכנית ברמה גבוהה (כתיבה ודיבור) – חובה .\n- יכולת עבודה מול ספקים ושותפים טכנולוגיים בארץ ובחו\"ל, כולל כתיבת מפרטים למכונות – יתרון .\n- ידע ב אוטומציה , רובוטיקה ו מערכות בקרה – יתרון משמעותי .\n- נכונות לנסיעות לחו\"ל ולעבודה בשעות מאומצות/לא שגרתיות.\n for more jobs visit our jobs pages https://www.jobsseek.info/jobs למשרות נוספות בקרו בעמוד המשרות באתר שלנו\n--- POSTING END ---","incomplete":false},"linkedin-4489243426":{"block":"JOB-RADAR ANALYZE\nTitle: Project Manager & Operational Excellence\nCompany: MediWound\nLocation: Yavne, Center District, Israel\nSource: LinkedIn | URL: https://il.linkedin.com/jobs/view/project-manager-operational-excellence-at-mediwound-4489243426\nPosted: 12 Nov 2026\nRadar flags: none\n--- POSTING START ---\nMediWound is seeking a Project Manager, Operational Excellence, to lead cross-functional projects, align teams around shared priorities, and drive continuous improvement across the organization. The role combines project management, budget planning and control, implementation of Objectives and Key Results (OKRs), and monitoring of Key Performance Indicators (KPIs). It also includes leading the adoption of AI tools and administering organizational work platforms, including Claude and monday.com.\n This pivotal, cross-functional role works closely with department heads and directly influences how the organization plans, executes, and learns\n What will you do?\n Project Management\n - Lead cross-functional projects end to end, from initiation and planning through execution, delivery, and closure.\n- Define project scope, objectives, deliverables, and success criteria in partnership with department heads and key stakeholders.\n- Build and maintain detailed project plans, including timelines, milestones, resource allocation, and budgets.\n- Monitor progress against plan, manage changes to scope and timelines, and ensure projects are delivered on time and within budget.\n- Provide regular status reports and updates to management and stakeholders.\n- Identify risks, dependencies, and roadblocks early, develop mitigation plans, and escalate issues when needed.\n- Facilitate project meetings, drive decisions, and hold teams accountable for their commitments.\n- Conduct post-project reviews to capture lessons learned and standardize best practices.\n Operational Excellence and Continuous Improvement\n - Lead operational excellence and process improvement initiatives using recognized methodologies such as Lean and Six Sigma.\n- Map and analyze current workflows to identify inefficiencies and bottlenecks, and design improved future-state processes.\n- Define measurable improvement targets, track results, and ensure that gains are sustained over time.\n- Standardize and document improved processes and best practices in coordination with process owners and in alignment with quality and regulatory requirements.\n- Promote a culture of continuous improvement by facilitating improvement workshops and training teams on improvement tools.\n Budget Management, OKRs, and Performance Metrics\n - Plan, manage, and monitor project and operational budgets, tracking actual spending against plan and flagging variances.\n- Lead the implementation of the OKR framework across the organization, supporting teams in setting objectives and tracking progress against them.\n- Define, collect, and analyze departmental KPIs, and build dashboards that track performance over time.\n- Lead the quarterly business review process, preparing and presenting an organization-wide update on KPI and OKR performance, project status, key achievements, challenges, and recommended next steps.\n AI Adoption\n - Identify high-value use cases for AI and lead the implementation and adoption of AI tools across the organization.\n Work Management Platform (monday.com)\n - Own the organization's monday.com environment, designing workspaces, boards, and dashboards that give departments and management real-time visibility into projects, tasks, and KPIs.\n- Build automations and integrations that streamline workflows and reduce manual work.\n- Define platform standards and best practices to ensure consistent use across the organization.\n- Train and support users across the organization and drive adoption of the platform.\n What should you have?\n - At least three years of hands-on project management experience, leading cross-functional projects in an operations, Project Management Office (PMO), or similar role.\n- Experience working with managers and stakeholders across multiple departments simultaneously.\n- Proven knowledge of project management methodologies and tools, including planning, scheduling, and risk management.\n- Experience in budget planning and control.\n- Working knowledge of OKR frameworks and KPI measurement.\n- Advanced proficiency in monday.com or a comparable work management platform, including dashboard development.\n- Advanced proficiency in Excel and PowerPoint, including building data-driven presentations for management.\n- Familiarity with and interest in AI tools, with a willingness to lead their adoption across the organization.\n- Native-level Hebrew and excellent written and verbal English.\n Preferred Qualifications\n - Project management certification, such as PMP.\n- Certification or practical experience in Lean methodologies, such as Lean Six Sigma.\n- Experience in a biotech, pharmaceutical, or other regulated environment.\n- A bachelor’s degree in industrial engineering and management, Business Administration, or a related field.\n Key Competencies\n - Strong organizational skills, a structured approach, and the ability to see the broader organizational picture while maintaining attention to detail.\n- Excellent interpersonal skills and the ability to influence and engage others without direct authority.\n- Ability to manage multiple projects concurrently and prioritize effectively.\n- Analytical thinking, with the ability to translate data into actionable insights and communicate findings clearly.\n- Technological curiosity and a willingness to learn and implement new tools.\n- Initiative, independence, strong ownership and accountability, and a continuous improvement mindset.\n--- POSTING END ---","incomplete":false},"linkedin-4487697316":{"block":"JOB-RADAR ANALYZE\nTitle: מנהל/ת פרוייקטים להעברת ייצור\nCompany: CONTROP Precision Technologies Ltd.\nLocation: Kfar Saba, Center District, Israel\nSource: LinkedIn | URL: https://il.linkedin.com/jobs/view/%D7%9E%D7%A0%D7%94%D7%9C-%D7%AA-%D7%A4%D7%A8%D7%95%D7%99%D7%99%D7%A7%D7%98%D7%99%D7%9D-%D7%9C%D7%94%D7%A2%D7%91%D7%A8%D7%AA-%D7%99%D7%99%D7%A6%D7%95%D7%A8-at-controp-precision-technologies-ltd-4487697316\nPosted: 9 Nov 2026\nRadar flags: Description incomplete\n--- POSTING START ---\nמנהל/ת פרוייקטים להעברת ייצור at CONTROP Precision Technologies Ltd. — Kfar Saba, Center District, Israel. Open the LinkedIn posting for the full description and apply.\n\nSee the full LinkedIn posting for requirements and Easy Apply / Apply.\n--- POSTING END ---","incomplete":true},"linkedin-4487638938":{"block":"JOB-RADAR ANALYZE\nTitle: NPI & Production Engineer\nCompany: HISKY\nLocation: Rosh HaAyin, Center District, Israel\nSource: LinkedIn | URL: https://il.linkedin.com/jobs/view/npi-production-engineer-at-hisky-4487638938\nPosted: 8 Nov 2026\nRadar flags: Description incomplete\n--- POSTING START ---\nNPI & Production Engineer at HISKY — Rosh HaAyin, Center District, Israel. Open the LinkedIn posting for the full description and apply.\n\nSee the full LinkedIn posting for requirements and Easy Apply / Apply.\n--- POSTING END ---","incomplete":true},"workday-medtronic-R78174-1":{"block":"JOB-RADAR ANALYZE\nTitle: Manufacturing Engineer - temporary (9-month contract)\nCompany: Medtronic Israel\nLocation: Jerusalem, Jerusalem, Israel\nSource: Workday/Medtronic Israel | URL: https://medtronic.wd1.myworkdayjobs.com/MedtronicCareers/job/Jerusalem-Jerusalem-Israel/Manufacturing-Engineer_R78174-1\nPosted: 4 Nov 2026\nRadar flags: Description incomplete\n--- POSTING START ---\nManufacturing Engineer - temporary (9-month contract) at Medtronic Israel — Jerusalem, Jerusalem, Israel\n\nSee full posting.\n--- POSTING END ---","incomplete":true},"linkedin-4487408681":{"block":"JOB-RADAR ANALYZE\nTitle: System Engineer – Production Support for Laser and Observation Systems\nCompany: Ethosia\nLocation: Modiin-Maccabim-Reut, Center District, Israel\nSource: LinkedIn | URL: https://il.linkedin.com/jobs/view/system-engineer-%E2%80%93-production-support-for-laser-and-observation-systems-at-ethosia-4487408681\nPosted: 13 Nov 2026\nRadar flags: Description incomplete\n--- POSTING START ---\nSystem Engineer – Production Support for Laser and Observation Systems at Ethosia — Modiin-Maccabim-Reut, Center District, Israel. Open the LinkedIn posting for the full description and apply.\n\nSee the full LinkedIn posting for requirements and Easy Apply / Apply.\n--- POSTING END ---","incomplete":true},"linkedin-4490381677":{"block":"JOB-RADAR ANALYZE\nTitle: Head of Assembly Division\nCompany: Unknown company\nLocation: Ashdod, South District, Israel\nSource: LinkedIn | URL: https://www.linkedin.com/jobs/view/4490381677\nPosted: 12 Nov 2026\nRadar flags: Description incomplete\n--- POSTING START ---\nHead of Assembly Division at Unknown company — Ashdod, South District, Israel. Open the LinkedIn posting for the full description and apply.\n\nSee the full LinkedIn posting for requirements and Easy Apply / Apply.\n--- POSTING END ---","incomplete":true},"linkedin-4484372894":{"block":"JOB-RADAR ANALYZE\nTitle: Manufacturing Execution & Systems Eng\nCompany: Applied Materials - Israel\nLocation: Rehovot, Center District, Israel\nSource: LinkedIn | URL: https://il.linkedin.com/jobs/view/manufacturing-execution-systems-eng-at-applied-materials-israel-4484372894\nPosted: 12 Nov 2026\nRadar flags: Description incomplete\n--- POSTING START ---\nManufacturing Execution & Systems Eng at Applied Materials - Israel — Rehovot, Center District, Israel. Open the LinkedIn posting for the full description and apply.\n\nSee the full LinkedIn posting for requirements and Easy Apply / Apply.\n--- POSTING END ---","incomplete":true},"linkedin-4489457829":{"block":"JOB-RADAR ANALYZE\nTitle: מנהל/ת מצוינות תפעולית למרכז הלוגיסטי של אסם נסטלה\nCompany: Nestlé\nLocation: Hevel Modiin Regional Council, Center District, Israel\nSource: LinkedIn | URL: https://il.linkedin.com/jobs/view/%D7%9E%D7%A0%D7%94%D7%9C-%D7%AA-%D7%9E%D7%A6%D7%95%D7%99%D7%A0%D7%95%D7%AA-%D7%AA%D7%A4%D7%A2%D7%95%D7%9C%D7%99%D7%AA-%D7%9C%D7%9E%D7%A8%D7%9B%D7%96-%D7%94%D7%9C%D7%95%D7%92%D7%99%D7%A1%D7%98%D7%99-%D7%A9%D7%9C-%D7%90%D7%A1%D7%9D-%D7%A0%D7%A1%D7%98%D7%9C%D7%94-at-nestl%C3%A9-4489457829\nPosted: 10 Nov 2026\nRadar flags: Description incomplete\n--- POSTING START ---\nמנהל/ת מצוינות תפעולית למרכז הלוגיסטי של אסם נסטלה at Nestlé — Hevel Modiin Regional Council, Center District, Israel. Open the LinkedIn posting for the full description and apply.\n\nSee the full LinkedIn posting for requirements and Easy Apply / Apply.\n--- POSTING END ---","incomplete":true},"linkedin-4422736015":{"block":"JOB-RADAR ANALYZE\nTitle: מהנדס.ת תהליך\nCompany: Elbit Systems Israel\nLocation: Ramla, Center District, Israel\nSource: LinkedIn | URL: https://il.linkedin.com/jobs/view/%D7%9E%D7%94%D7%A0%D7%93%D7%A1-%D7%AA-%D7%AA%D7%94%D7%9C%D7%99%D7%9A-at-elbit-systems-israel-4422736015\nPosted: 9 Nov 2026\nRadar flags: Description incomplete\n--- POSTING START ---\nמהנדס.ת תהליך at Elbit Systems Israel — Ramla, Center District, Israel. Open the LinkedIn posting for the full description and apply.\n\nSee the full LinkedIn posting for requirements and Easy Apply / Apply.\n--- POSTING END ---","incomplete":true},"linkedin-4445175897":{"block":"JOB-RADAR ANALYZE\nTitle: Process Engineer\nCompany: Stratasys\nLocation: Kiryat Gat, South District, Israel\nSource: LinkedIn | URL: https://il.linkedin.com/jobs/view/process-engineer-at-stratasys-4445175897\nPosted: 9 Nov 2026\nRadar flags: Description incomplete\n--- POSTING START ---\nProcess Engineer at Stratasys — Kiryat Gat, South District, Israel. Open the LinkedIn posting for the full description and apply.\n\nSee the full LinkedIn posting for requirements and Easy Apply / Apply.\n--- POSTING END ---","incomplete":true},"linkedin-4488786131":{"block":"JOB-RADAR ANALYZE\nTitle: Production Team Leader\nCompany: Exodigo\nLocation: Tel Aviv-Yafo, Tel Aviv District, Israel\nSource: LinkedIn | URL: https://il.linkedin.com/jobs/view/production-team-leader-at-exodigo-4488786131\nPosted: 8 Nov 2026\nRadar flags: Description incomplete\n--- POSTING START ---\nProduction Team Leader at Exodigo — Tel Aviv-Yafo, Tel Aviv District, Israel. Open the LinkedIn posting for the full description and apply.\n\nSee the full LinkedIn posting for requirements and Easy Apply / Apply.\n--- POSTING END ---","incomplete":true},"linkedin-4487648309":{"block":"JOB-RADAR ANALYZE\nTitle: Advanced Composites & Manufacturing Technologies Expert\nCompany: abra\nLocation: Center District, Israel\nSource: LinkedIn | URL: https://il.linkedin.com/jobs/view/advanced-composites-manufacturing-technologies-expert-at-abra-4487648309\nPosted: 8 Nov 2026\nRadar flags: Location unclear; Description incomplete\n--- POSTING START ---\nAdvanced Composites & Manufacturing Technologies Expert at abra — Center District, Israel. Open the LinkedIn posting for the full description and apply.\n\nSee the full LinkedIn posting for requirements and Easy Apply / Apply.\n--- POSTING END ---","incomplete":true},"workday-amat-R2628115":{"block":"JOB-RADAR ANALYZE\nTitle: Mechanical Suppliers Engineer\nCompany: Applied Materials\nLocation: Rehovot,ISR\nSource: Workday/Applied Materials | URL: https://amat.wd1.myworkdayjobs.com/External/job/RehovotISR/Mechanical-Suppliers-Engineer_R2628115\nPosted: 30 Oct 2026\nRadar flags: Description incomplete\n--- POSTING START ---\nMechanical Suppliers Engineer at Applied Materials — Rehovot,ISR\n\nSee full posting.\n--- POSTING END ---","incomplete":true},"workday-amat-R2627114-1":{"block":"JOB-RADAR ANALYZE\nTitle: Motion & Control Supplier Engineer\nCompany: Applied Materials\nLocation: Rehovot,ISR\nSource: Workday/Applied Materials | URL: https://amat.wd1.myworkdayjobs.com/External/job/RehovotISR/Motion---Control-Supplier-Engineer_R2627114-1\nPosted: 30 Oct 2026\nRadar flags: Description incomplete\n--- POSTING START ---\nMotion & Control Supplier Engineer at Applied Materials — Rehovot,ISR\n\nSee full posting.\n--- POSTING END ---","incomplete":true},"workday-hp-3169796-2":{"block":"JOB-RADAR ANALYZE\nTitle: Hardware Manufacturing Integrator\nCompany: HP Indigo\nLocation: Kiryat-Gat, South District, Israel\nSource: Workday/HP Indigo | URL: https://hp.wd5.myworkdayjobs.com/ExternalCareerSite/job/Kiryat-Gat-South-District-Israel/Hardware-Manufacturing-Integrator_3169796-2\nPosted: 21 Oct 2026\nRadar flags: Description incomplete\n--- POSTING START ---\nHardware Manufacturing Integrator at HP Indigo — Kiryat-Gat, South District, Israel\n\nSee full posting.\n--- POSTING END ---","incomplete":true},"workday-amat-R2620070-1":{"block":"JOB-RADAR ANALYZE\nTitle: Motion control engineer\nCompany: Applied Materials\nLocation: Rehovot,ISR\nSource: Workday/Applied Materials | URL: https://amat.wd1.myworkdayjobs.com/External/job/RehovotISR/Motion-control-engineer_R2620070-1\nPosted: unknown\nRadar flags: Description incomplete\n--- POSTING START ---\nMotion control engineer at Applied Materials — Rehovot,ISR\n\nSee full posting.\n--- POSTING END ---","incomplete":true}}</script>
+  <script src="./app-net.js" defer></script>
+  <script src="./app-feedback.js" defer></script>
+  <script src="./app-scan.js" defer></script>
+  <script src="./app-claude.js" defer></script>
+</body>
+</html>

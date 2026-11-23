@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>RADAR · Sources</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #101816;
+      --muted: #5a6a64;
+      --paper: #f3f6f4;
+      --mint-wash: #e8f2ec;
+      --panel: #ffffff;
+      --line: #d5ddd8;
+      --cta: #0a5c48;
+      --hero-ink: #f4f7f5;
+      --hero-muted: #c9d7d0;
+      --brand-spark: #8fe0c5;
+      --desk: 720px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "DM Sans", "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, var(--mint-wash), var(--paper));
+      color: var(--ink);
+      line-height: 1.45;
+    }
+    header.hero {
+      padding: 1.35rem 1rem 1.15rem;
+      background: linear-gradient(145deg, #0e1614, #1c3a4a);
+      color: var(--hero-ink);
+    }
+    .hero-inner { max-width: var(--desk); margin: 0 auto; }
+    .brand { font-weight: 800; font-size: 1.75rem; margin: 0; letter-spacing: -0.03em; }
+    .brand span { color: var(--brand-spark); }
+    .hero p { margin: 0.45rem 0 0; color: var(--hero-muted); font-size: 0.95rem; }
+    .hero a { color: var(--brand-spark); }
+    main { max-width: var(--desk); margin: 0 auto; padding: 1.15rem 1rem 2rem; }
+    .source {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.9rem 1rem;
+      margin: 0 0 0.65rem;
+    }
+    .source h2 { margin: 0 0 0.25rem; font-size: 1.05rem; }
+    .badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+      margin-inline-start: 0.35rem;
+      vertical-align: middle;
+    }
+    .badge-active { background: #d8f0e6; color: #0a5c48; }
+    .badge-inactive { background: #eee; color: #5a6a64; }
+    .badge-skipped { background: #f3e6d8; color: #8a3f18; }
+    .meta { color: var(--muted); font-size: 0.88rem; margin: 0.2rem 0; }
+    .companies { margin: 0.35rem 0 0; padding-inline-start: 1.1rem; font-size: 0.9rem; }
+    .empty { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="brand">RADAR<span>.</span></p>
+      <p>Job sources · <a href="./">Back to jobs</a></p>
+    </div>
+  </header>
+  <main>
+    <p class="empty" id="lead">Loading sources…</p>
+    <div id="list"></div>
+  </main>
+  <script src="./demo.js"></script>
+  <script>
+    (() => {
+      const list = document.getElementById("list");
+      const lead = document.getElementById("lead");
+      function esc(s) {
+        return String(s || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+      function badge(status) {
+        const label =
+          status === "active"
+            ? "Active"
+            : status === "inactive"
+              ? "Inactive (scraping, not enabled)"
+              : "Skipped";
+        const cls =
+          status === "active" ? "badge-active" : status === "inactive" ? "badge-inactive" : "badge-skipped";
+        return `<span class="badge ${cls}">${esc(label)}</span>`;
+      }
+      fetch("/api/sources")
+        .then((r) => r.json())
+        .then((data) => {
+          const rows = data.sources || [];
+          lead.textContent = "Live catalog from config/companies.yaml + scan wiring.";
+          list.innerHTML = rows
+            .map((s) => {
+              const cos = (s.companies || []).length
+                ? `<ul class="companies">${s.companies.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>`
+                : "";
+              const count =
+                s.lastCount != null ? `<p class="meta">Last scan count: ${esc(s.lastCount)}</p>` : "";
+              return `<article class="source">
+                <h2>${esc(s.name)}${badge(s.status)}</h2>
+                <p class="meta">${esc(s.method)}</p>
+                <p class="meta">${esc(s.note)}</p>
+                ${count}
+                ${cos}
+              </article>`;
+            })
+            .join("");
+        })
+        .catch(() => {
+          lead.textContent =
+            "Could not load /api/sources. Open http://localhost:8787/sources.html on the RADAR server.";
+        });
+    })();
+  </script>
+</body>
+</html>

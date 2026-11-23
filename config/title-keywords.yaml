@@ -1,0 +1,4 @@
+# DEPRECATED — edit config/search-profile.json instead.
+# Kept only so old docs/links do not 404. The live filter ignores this file.
+positive: []
+negative: []

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>RADAR · Rules</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #101816; --muted: #5a6a64; --paper: #f3f6f4; --mint: #e8f2ec;
+      --panel: #fff; --line: #d5ddd8; --cta: #0a5c48; --yield: #0f8a6a; --maybe: #c45c26;
+      --desk: 720px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: "DM Sans", "Segoe UI", sans-serif; color: var(--ink);
+      background: linear-gradient(180deg, var(--mint), var(--paper)); line-height: 1.45;
+    }
+    header {
+      padding: 1.25rem 1rem; background: linear-gradient(145deg, #0e1614, #1c3a4a); color: #f4f7f5;
+    }
+    .inner { max-width: var(--desk); margin: 0 auto; }
+    .brand { font-weight: 800; font-size: 1.75rem; margin: 0; letter-spacing: -0.03em; }
+    .brand span { color: #8fe0c5; }
+    header p { margin: 0.4rem 0 0; color: #c9d7d0; font-size: 0.95rem; }
+    header a { color: #8fe0c5; font-weight: 700; text-decoration: none; }
+    main { max-width: var(--desk); margin: 0 auto; padding: 1.15rem 1rem 2rem; }
+    h2 { font-size: 1.15rem; margin: 1.25rem 0 0.65rem; }
+    .card {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+      padding: 1rem; margin: 0 0 0.75rem;
+    }
+    .muted { color: var(--muted); font-size: 0.9rem; }
+    .row { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.65rem; }
+    button {
+      appearance: none; border: 1px solid var(--line); background: var(--panel);
+      font: inherit; font-weight: 700; padding: 0.55rem 0.8rem; border-radius: 10px;
+      min-height: 2.6rem; cursor: pointer;
+    }
+    button:focus-visible, a:focus-visible, input:focus-visible {
+      outline: 2px solid var(--yield); outline-offset: 2px;
+    }
+    button.primary { background: var(--cta); color: #fff; border-color: var(--cta); }
+    button.warn { color: #8a3f18; }
+    .bar {
+      display: grid; grid-template-columns: minmax(7rem, 11rem) 1fr auto; gap: 0.5rem;
+      align-items: center; margin: 0.35rem 0; font-size: 0.9rem;
+    }
+    .bar .track { height: 0.55rem; background: #e6ece8; border-radius: 999px; overflow: hidden; }
+    .bar .fill { height: 100%; background: var(--yield); border-radius: 999px; }
+    .toggle { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; }
+    input[type="text"] {
+      width: 100%; font: inherit; border: 1px solid var(--line); border-radius: 8px; padding: 0.5rem;
+    }
+    .warn-box { color: #8a3f18; font-size: 0.88rem; margin: 0.4rem 0; }
+    .empty { padding: 1rem; border: 1px dashed var(--line); border-radius: 12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="inner">
+      <p class="brand">RADAR<span>.</span></p>
+      <p>Rules &amp; learning proposals · <a href="./">Back to shortlist</a></p>
+    </div>
+  </header>
+  <main>
+    <p class="muted">Rules never apply until you approve them. Storage is on this PC’s RADAR server (shared with your phone on the same Wi‑Fi).</p>
+
+    <h2>Proposals</h2>
+    <div id="proposals"><div class="empty">Loading…</div></div>
+
+    <h2>Approved rules</h2>
+    <div id="rules"><div class="empty">Loading…</div></div>
+
+    <h2>Hidden by rules</h2>
+    <div id="hidden"><div class="empty">Loading…</div></div>
+
+    <h2>Insights (last 30 days)</h2>
+    <div id="insights"><div class="empty">Loading…</div></div>
+  </main>
+  <script src="./demo.js"></script>
+  <script src="./app-net.js" defer></script>
+  <script src="./app-rules.js" defer></script>
+</body>
+</html>

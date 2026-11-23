@@ -1,0 +1,29 @@
+{
+  "name": "job-radar",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "daily": "tsx src/run-daily.ts",
+    "build-web": "tsx src/run-daily.ts --skip-fetch",
+    "demo": "tsx src/run-daily.ts --demo",
+    "serve": "tsx src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "test:fit": "tsx tests/fit-score.regression.mjs",
+    "test:relevance": "tsx tests/relevance-filter.regression.mjs",
+    "test": "npm run test:relevance",
+    "build-demo": "node scripts/build-demo.mjs"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "js-yaml": "^4.1.0",
+    "nodemailer": "^6.9.16"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.10.5",
+    "@types/nodemailer": "^6.4.17",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

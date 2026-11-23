@@ -1,0 +1,73 @@
+# One line per company: name, ATS type, board URL (and optional notes).
+# Adding a company = add one entry here.
+# ats: workday | comeet | greenhouse | lever | smartrecruiters
+# blocked: true = the careers site refuses automated requests from the scan servers.
+#   RADAR does not fetch it; the dashboard links board_url under "Check yourself".
+#   Their roles usually still arrive through LinkedIn.
+#
+# NOT added (no usable public API / job feed):
+# - Israel Aerospace Industries: Greenhouse board "iai" is UK i.AI, not IAI Israel.
+# - Stratasys: SuccessFactors; SmartRecruiters API empty; no public job RSS/XML.
+# - Tower Semiconductor: SuccessFactors; site RSS is PR/news, not jobs.
+# - DustPhotonics, Teva, Magenta, Elbit, Valens, Mobileye: no public ATS API found.
+# Jooble: skipped (500 lifetime free requests — too few for daily runs).
+
+companies:
+  - name: Applied Materials
+    ats: workday
+    board_url: https://amat.wd1.myworkdayjobs.com/External
+    enabled: true
+    blocked: true
+
+  - name: HP Indigo
+    ats: workday
+    board_url: https://hp.wd5.myworkdayjobs.com/ExternalCareerSite
+    enabled: true
+    blocked: true
+
+  - name: KLA
+    ats: workday
+    board_url: https://kla.wd1.myworkdayjobs.com/Israel
+    enabled: true
+    blocked: true
+
+  - name: Intel Israel
+    ats: workday
+    board_url: https://intel.wd1.myworkdayjobs.com/External
+    enabled: true
+    blocked: true
+
+  - name: Medtronic Israel
+    ats: workday
+    board_url: https://medtronic.wd1.myworkdayjobs.com/MedtronicCareers
+    enabled: true
+    blocked: true
+
+  - name: Philips Israel
+    ats: workday
+    board_url: https://philips.wd3.myworkdayjobs.com/jobs-and-careers
+    enabled: true
+    blocked: true
+
+  - name: GE HealthCare Israel
+    ats: workday
+    board_url: https://gehc.wd5.myworkdayjobs.com/GEHC_ExternalSite
+    enabled: true
+    blocked: true
+
+  - name: Nova
+    ats: comeet
+    board_url: https://www.novami.com/location_filter/israel/
+    enabled: true
+    blocked: true
+
+  - name: Kornit Digital
+    ats: comeet
+    board_url: https://careers.kornit.com/all-positions/
+    enabled: true
+    blocked: true
+
+  - name: Razor Labs
+    ats: comeet
+    board_url: https://razor-labs.com/careers
+    enabled: true

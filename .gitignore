@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.env
+*-service-account*.json
+service-account.json
+google-credentials.json
+data/seen-ids.json
+data/feedback-archive.json
+data/rule-show-anyway.json
+data/linkedin-desc-cache.json
+data/last-success-day.txt
+data/daily-last-run.log
+data/run-*.json
+.DS_Store
+*.log
+.vercel
+.netlify
+# Personal resumes — keep local only (used for CV match scoring)
+cv/*
+!cv/.gitkeep
